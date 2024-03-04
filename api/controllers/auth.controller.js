@@ -26,7 +26,9 @@ const login = async (req, res) => {
     return res.status(400).json("Please provide an email and password");
   }
   try {
-    const userExists = await User.findOne({ email: req.body.email });
+    const userExists = await User.findOne({ email: req.body.email }).select(
+      "-password -refreshToken"
+    );
     if (!userExists) return res.status(400).json("User does not exist");
 
     const validPassword = await userExists.matchPasswords(password);
@@ -38,7 +40,8 @@ const login = async (req, res) => {
     const options = {
       httpOnly: true,
     };
-    res.status(200).cookie("access_token", token, options).json("Logged in");
+
+    res.status(200).cookie("access_token", token, options).json(userExists);
   } catch (err) {
     res.status(500).json(err);
   }

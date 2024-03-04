@@ -1,12 +1,19 @@
 import React, { useState } from "react";
 import { ArrowRight } from "lucide-react";
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { signInStart, signInSuccess } from "../app/user/userSlice";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [redirect, setRedirect] = useState(false);
+  const { loading } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   async function login(e) {
     e.preventDefault();
+    dispatch(signInStart());
+
     const res = await fetch("http://localhost:3000/login", {
       method: "POST",
       headers: {
@@ -14,15 +21,15 @@ function Login() {
       },
       body: JSON.stringify({ email, password }),
     });
-    if (res.ok) {
-      setRedirect(true);
+    const data = await res.json();
+    if (data) {
+      dispatch(signInSuccess(data));
+      navigate("/");
     } else {
       alert("Invalid Credentials");
     }
   }
-  if (redirect) {
-    return <Navigate to='/' />;
-  }
+
   return (
     <section className='rounded-md bg-black/70 p-2'>
       <div className='flex items-center justify-center bg-white px-4 py-10 sm:px-6 sm:py-16 lg:px-8'>
