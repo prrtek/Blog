@@ -1,20 +1,28 @@
 import React, { useState } from "react";
 import { ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
 function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [username, setUserName] = useState("");
 
+  const navigate = useNavigate();
   async function register(e) {
     e.preventDefault();
-    await fetch("http://localhost:3000/register", {
+
+    const res = await fetch("http://localhost:3000/register", {
       method: "POST",
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ username, email, password }),
       headers: {
         "Content-Type": "application/json",
       },
     });
+    if (res.ok) {
+      navigate("/login");
+    } else {
+      alert("check the details and try again!");
+    }
   }
   return (
     <section className='rounded-md bg-black/80 p-2'>
@@ -54,7 +62,7 @@ function Register() {
                   className='text-base font-medium text-gray-900'
                 >
                   {" "}
-                  Full Name{" "}
+                  User Name{" "}
                 </label>
                 <div className='mt-2'>
                   <input
@@ -62,8 +70,8 @@ function Register() {
                     type='text'
                     placeholder='Full Name'
                     id='name'
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    value={username}
+                    onChange={(e) => setUserName(e.target.value)}
                   ></input>
                 </div>
               </div>
@@ -112,7 +120,7 @@ function Register() {
                   type='submit'
                   className='inline-flex w-full items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80'
                 >
-                  Create Account <ArrowRight className='ml-2' size={16} />
+                  Get started <ArrowRight className='ml-2' size={16} />
                 </button>
               </div>
             </div>
